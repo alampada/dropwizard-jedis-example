@@ -38,7 +38,7 @@ public class RedisUserRepository implements UserRepository {
         try {
             final String jsonStr = objectMapper.writeValueAsString(user);
             try (Jedis jedis = jedisPool.getResource()) {
-                jedis.set(String.valueOf(user.getId()), jsonStr);
+                jedis.setex(String.valueOf(user.getId()), 30, jsonStr);
             }
         }
         catch (JsonProcessingException e) {

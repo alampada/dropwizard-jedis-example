@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,8 +29,9 @@ public class RedisExampleResource {
     }
 
     @POST
-    public void storeUser(User user) {
+    public Response storeUser(User user) {
         LOG.info(user);
         userRepository.storeUser(user);
+        return Response.status(Response.Status.CREATED).build();
     }
 }

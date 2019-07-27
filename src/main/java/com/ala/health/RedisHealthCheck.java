@@ -15,7 +15,7 @@ public class RedisHealthCheck extends HealthCheck {
     protected Result check() throws Exception {
         try (Jedis jedis = jedisPool.getResource()) {
             String echo = jedis.echo("health");
-            return "health".equals("health") ? Result.healthy() : Result.unhealthy("got: " + echo);
+            return "health".equals(echo) ? Result.healthy() : Result.unhealthy("got: " + echo);
         }
     }
 }
