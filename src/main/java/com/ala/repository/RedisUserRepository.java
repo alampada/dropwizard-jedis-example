@@ -8,24 +8,26 @@ import org.apache.commons.logging.LogFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-
 import java.io.IOException;
 
 public class RedisUserRepository implements UserRepository {
 
     private static final Log LOG = LogFactory.getLog(RedisUserRepository.class);
 
-    private final JedisPool jedisPool;
+    private final JedisPool masterRedisPool;
+
+    private final JedisPool readRedisPool;
 
     private final ObjectMapper objectMapper;
 
-    public RedisUserRepository(JedisPool jedisPool, ObjectMapper objectMapper) {
+    public RedisUserRepository(JedisPool masterRedisPool, JedisPool readRedisPool, ObjectMapper objectMapper) {
+        this.readRedisPool = readRedisPool;
         this.objectMapper = objectMapper;
-        this.jedisPool = jedisPool;
+        this.masterRedisPool = masterRedisPool;
     }
 
     public User getUser(int id) {
-        try (Jedis jedis = jedisPool.getResource()) {
+        try (Jedis jedis = readRedisPool.getResource()) {
             return objectMapper.readValue(jedis.get(String.valueOf(id)), User.class);
         }
         catch (IOException e) {
@@ -37,7 +39,7 @@ public class RedisUserRepository implements UserRepository {
     public void storeUser(User user) {
         try {
             final String jsonStr = objectMapper.writeValueAsString(user);
-            try (Jedis jedis = jedisPool.getResource()) {
+            try (Jedis jedis = masterRedisPool.getResource()) {
                 jedis.setex(String.valueOf(user.getId()), 30, jsonStr);
             }
         }

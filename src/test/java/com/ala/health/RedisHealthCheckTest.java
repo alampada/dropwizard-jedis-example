@@ -1,6 +1,5 @@
 package com.ala.health;
 
-import com.codahale.metrics.health.HealthCheck;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
